@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# Create the project skeleton for new projects.
+#
+# The GNU M4 Macro Processor is used to process build-files in project skeletons
+# placed below `./skel', similar in princple to the behavior of `useradd(1)'s
+# treatment of `/etc/skel'.  The difference is that minor changes are made to
+# build files using M4, and different skeletons are available.
+#
+# An example usages:
+# ./new-project c++ my-new-project-name
+#
+# Will result in creating a new directory named `my-new-project-name' with a
+# default makefile, project skeleton, .gitignore, and the rest of the contents
+# of ./skel/c++/ in their proper places in the subdirectory.
+#
+# Input files with the extension `.m4' are passed through GNU M4 only once.
+# Everything else is only copied.
+
+SKELDIR=~/prj/make-new-project/skel
+PROJECTDIR=~/prj
+FORCE=0
+
+while getopts "fp:" flag; do
+    case "$flag" in
+        f) FORCE=1;;
+        p) PROJECTDIR=$OPTARG;;
+    esac;
+done
+
+if [ $(expr $# - $OPTIND) -lt 1 ]; then
+    printf 'usage: %s [-f] [-p project-directory] language projectname\n' "$0"
+    exit 1
+fi
+
+if [ ! -d "$SKELDIR/${@:$OPTIND:1}" ]; then
+    printf "error: a project skeleton named %s was not found.\n" ${@:$OPTIND:1}
+    exit 1
+fi
+
+OUTPUTNAME=$(echo ${@:$OPTIND+1:1} | \
+                    tr ' ' '-' | \
+                    tr "[A-Z]" "[a-z]" | \
+                    tr -d -c '[:alnum:]-_.')
+
+# Do some basic sanity/safety checking of the command.  Tries to stop you from
+# nuking your project directories.  If you pass the `-f' flag, this stuff will
+# be skipped.
+if [ $FORCE -ne 1 ]; then
+    if [ "$2" != "$OUTPUTNAME" ]; then
+        printf "error: your project name breaks directory convention!\n"
+        exit 1
+    fi
+
+    # Make the project subdirectory and place the directory skeleton into the
+    # projects folder.  Check to make sure that the project doesn't exist
+    # already.
+    if [ -d "$PROJECTDIR/$OUTPUTNAME" ]; then
+        printf "error: your project already exists.\n"
+        exit 1
+    fi
+fi
+
+mkdir -p "$PROJECTDIR/$OUTPUTNAME"
+pushd "$SKELDIR/${@:$OPTIND:1}" > /dev/null
+
+# Copy the directory skeleton from the appropriate place:
+find -type d -exec mkdir -p -- "$PROJECTDIR/$OUTPUTNAME/"{} \;
+
+# Copy everything that's not run through M4
+find -type f -not -name '*.m4' | \
+    xargs -i sh -c "cp {} $PROJECTDIR/$OUTPUTNAME/{}"
+
+# Now handle those files we've got to run M4 over:
+while read -r line; do
+    OUTPUTFILE=$PROJECTDIR/$OUTPUTNAME/$(echo $line | sed 's/\.m4$//')
+    m4 -Dprojectname=$OUTPUTNAME -- "$line" > $OUTPUTFILE
+done < <(find . -type f -name '*.m4');
+
+popd > /dev/null
