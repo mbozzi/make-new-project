@@ -5,7 +5,8 @@
 # The GNU M4 Macro Processor is used to process build-files in project skeletons
 # placed below `./skel', similar in princple to the behavior of `useradd(1)'s
 # treatment of `/etc/skel'.  The difference is that minor changes are made to
-# build files using M4, and different skeletons are available.
+# build files using M4, and different skeletons (for different project set-ups)
+# are available.
 #
 # An example usages:
 # ./new-project c++ my-new-project-name
@@ -76,5 +77,8 @@ while read -r line; do
     OUTPUTFILE=$PROJECTDIR/$OUTPUTNAME/$(echo $line | sed 's/\.m4$//')
     m4 -Dprojectname=$OUTPUTNAME -- "$line" > $OUTPUTFILE
 done < <(find . -type f -name '*.m4');
+popd > /dev/null
 
+pushd "$PROJECTDIR/$OUTPUTNAME" > /dev/null
+git init; git add -A;
 popd > /dev/null

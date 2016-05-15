@@ -1,9 +1,9 @@
- # Does an in-source build of C++ code only.
-TARGET = ../projectname
+ # Does an in-source build of C code only.
+TARGET = ./projectname
 
 WFLAGS	 += -Wall -Wextra -pedantic
-CXXFLAGS += $(WFLAGS) -Og -ggdb -fno-omit-frame-pointer --std=c++14
-CXX_SRC_EXT = cxx
+CFLAGS += $(WFLAGS) -Og -ggdb -fno-omit-frame-pointer --std=c11
+C_SRC_EXT = c
 
 override LIBS += $(addprefix -l,$(LDLIBS))
 
@@ -20,19 +20,19 @@ $(shell mkdir -p $(BUILD_DIR))
 $(shell find $(SRC_DIR) -type d -exec mkdir -p -- $(BUILD_DIR)/{} \;)
 
 # Grab all C++ sources below the source directory.
-SRCS = $(shell find $(SRC_DIR) -name '*.$(CXX_SRC_EXT)' -type f)
-OBJS = $(subst $(SRC_DIR)/,$(BUILD_DIR)/,$(SRCS:.$(CXX_SRC_EXT)=.o))
+SRCS = $(shell find $(SRC_DIR) -name '*.$(C_SRC_EXT)' -type f)
+OBJS = $(subst $(SRC_DIR)/,$(BUILD_DIR)/,$(SRCS:.$(C_SRC_EXT)=.o))
 
 ifeq ($(strip $(SRCS)),)
 $(error No source code found below './$(SRC_DIR)'!  I look for files ending in	\
-'.$(CXX_SRC_EXT)')
+'.$(C_SRC_EXT)')
 endif
 
 $(TARGET): $(OBJS)
-	$(CXX) $(OUTPUT_OPTION) $(LDFLAGS) $(LIBS) $(WFLAGS) $^
+	$(CC) $(OUTPUT_OPTION) $(LDFLAGS) $(LIBS) $(WFLAGS) $^
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.$(CXX_SRC_EXT)
-	$(CXX) $(OUTPUT_OPTION) -MT $@ -MP -MMD -MF $(@:.o=.d) $(CXXFLAGS)	\
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.$(C_SRC_EXT)
+	$(CC) $(OUTPUT_OPTION) -MT $@ -MP -MMD -MF $(@:.o=.d) $(CFLAGS) \
 	$(CPPFLAGS) -c $<
 
 .PHONY: all
