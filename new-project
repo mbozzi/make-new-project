@@ -23,12 +23,17 @@ PROJECTDIR=~/prj
 LISTPROJECTS=0
 FORCE=0
 
+function usage() {
+    printf "usage: %s project-type project-name\n" "$0"
+    exit 0
+}
+
 while getopts "fp:l" flag; do
     case "$flag" in
         f) FORCE=1;;
         p) PROJECTDIR=$OPTARG;;
         l) LISTPROJECTS=1;;
-        *) exit 1;;
+        *) usage $0;;
     esac;
 done
 
@@ -39,6 +44,7 @@ fi
 
 if [ ! -d "$SKELDIR/${@:$OPTIND:1}" ]; then
     printf "error: a project skeleton named %s was not found.\n" ${@:$OPTIND:1}
+    usage "$0"
     exit 1
 fi
 
@@ -49,6 +55,7 @@ OUTPUTNAME=$(echo ${@:$OPTIND+1:1} | \
 
 if [ -z "$OUTPUTNAME" ]; then
     echo "error: no project name specified."
+    usage "$0"
     exit 1
 fi
 
@@ -57,7 +64,8 @@ fi
 # be skipped.
 if [ $FORCE -ne 1 ]; then
     if [ "$2" != "$OUTPUTNAME" ]; then
-        printf "error: your project name breaks directory convention!\n"
+        printf "error: your project name breaks naming convention.,!\n"
+        usage "$0"
         exit 1
     fi
 
@@ -66,6 +74,7 @@ if [ $FORCE -ne 1 ]; then
     # already.
     if [ -d "$PROJECTDIR/$OUTPUTNAME" ]; then
         printf "error: your project already exists.\n"
+        usage "$0"
         exit 1
     fi
 fi
