@@ -83,19 +83,33 @@ mkdir -p "$PROJECTDIR/$OUTPUTNAME"
 pushd "$SKELDIR/${@:$OPTIND:1}" > /dev/null
 
 # Copy the directory skeleton from the appropriate place:
-find -type d -exec mkdir -p -- "$PROJECTDIR/$OUTPUTNAME/"{} \;
+find . -type d -exec mkdir -p -- "$PROJECTDIR/$OUTPUTNAME/"{} \;
 
 # Copy everything that's not run through M4
-find -type f -not -name '*.m4' | \
+find . -type f -not -name '*.m4' | \
     xargs -i sh -c "cp {} $PROJECTDIR/$OUTPUTNAME/{}"
+
+# # Replace every file that's named projectname with the name of the project.
+# $($(find $PROJECTDIR/$OUTPUTNAME ! -readable -prune -o -type f | sed -ne \
+# '{/projectname/s/\(.*\)projectname\(.*\)/mv & \1$(OUTPUTNAME)\2;/gp}'))
 
 # Now handle those files we've got to run M4 over:
 while read -r line; do
     OUTPUTFILE=$PROJECTDIR/$OUTPUTNAME/$(echo $line | sed 's/\.m4$//')
     m4 -Dprojectname=$OUTPUTNAME -- "$line" > $OUTPUTFILE
 done < <(find . -type f -name '*.m4');
+
+# Now move the files named "/projectname.*" to the name of the project.
+while read -r line
+do
+    mv $line $(echo $line | sed -e "s!projectname\([^/]*$\)!$OUTPUTNAME\1!")
+done < <(find "$PROJECTDIR/$OUTPUTNAME" ! -readable -prune -o -name "projectname*")
+
 popd > /dev/null
 
 pushd "$PROJECTDIR/$OUTPUTNAME" > /dev/null
-git init; git add -A;
+
+git init
+git add -A
+
 popd > /dev/null
