@@ -18,7 +18,7 @@
 # Input files with the extension `.m4' are passed through GNU M4 only once.
 # Everything else is only copied.
 
-SKELDIR=~/prj/new-project/skel
+SKELDIR=~/prj/make-new-project/skel
 PROJECTDIR=~/prj
 LISTPROJECTS=0
 FORCE=0
@@ -53,6 +53,11 @@ OUTPUTNAME=$(echo ${@:$OPTIND+1:1} | \
                     tr "[A-Z]" "[a-z]" | \
                     tr -d -c '[:alnum:]-_.')
 
+echo "Creating new project in $PROJECTDIR/$OUTPUTNAME"
+echo "Project name is         $OUTPUTNAME"
+echo "Project directory is    $PROJECTDIR"
+echo "Skeleton directory is   $SKELDIR/${@:$OPTIND:1}"
+
 if [ -z "$OUTPUTNAME" ]; then
     echo "error: no project name specified."
     usage "$0"
@@ -63,12 +68,6 @@ fi
 # nuking your project directories.  If you pass the `-f' flag, this stuff will
 # be skipped.
 if [ $FORCE -ne 1 ]; then
-    if [ "$2" != "$OUTPUTNAME" ]; then
-        printf "error: your project name breaks naming convention.,!\n"
-        usage "$0"
-        exit 1
-    fi
-
     # Make the project subdirectory and place the directory skeleton into the
     # projects folder.  Check to make sure that the project doesn't exist
     # already.
