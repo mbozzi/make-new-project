@@ -90,7 +90,8 @@ def list_projects(args):
 
 if __name__ == "__main__":
     parser        = argparse.ArgumentParser(description="Create or list new project skeletons.")
-    subparsers    = parser.add_subparsers()
+    subparsers    = parser.add_subparsers(dest='command')
+    subparsers.required = True
 
     list_parser = subparsers.add_parser('list')
     list_parser.set_defaults(func=list_projects)
