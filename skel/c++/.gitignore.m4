@@ -1,18 +1,20 @@
 changequote([])dnl
+# Generic .gitignore file
+# Copyright (C) 2014-2016 Max Bozzi
+projectname
 # The output project itself.
 
-projectname
 # Emacs artifacts
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
 *.elc
-auto-save-list
-tramp
+*_archive
+*~
 .\#*
 .org-id-locations
-*_archive
+/.emacs.desktop
+/.emacs.desktop.lock
+\#*\#
+auto-save-list
+tramp
 
 # Compiled object code:
 *.o
@@ -22,6 +24,11 @@ a.out
 *.d
 
 # LaTeX artifacts:
-*.out
-*.log
 *.aux
+*.log
+*.out
+
+GPATH
+GRTAGS
+GTAGS
+TAGS
