@@ -1,0 +1,46 @@
+# Generic .gitattributes file
+# Copyright (C) 2014-2016 Max Bozzi
+
+# Default to native line-endings, project-wide.
+* text=auto
+
+# Explicit declaration of text files.
+*.c    text
+*.cc   text
+*.conf text
+*.cpp  text
+*.cpp  text
+*.cxx  text
+*.cxx  text
+*.d    text
+*.hex  text
+*.html text
+*.ihex text
+*.ipp  text
+*.ixx  text
+*.ll   text
+*.log  text
+*.py   text
+*.s    text
+*.sh   text
+*.tpp  text
+*.txx  text
+*.yy   text
+*.zcat text
+
+# Explicit declaration of binary files.
+*.bmp     binary
+*.collada binary
+*.dae     binary
+*.dat     binary
+*.elf     binary
+*.exe     binary
+*.jpeg    binary
+*.jpg     binary
+*.pch     binary
+*.png     binary
+*.psd     binary
+*.vec     binary
+
+# Make merge-conflict markers easier to see.
+* conflict-marker-size=32
