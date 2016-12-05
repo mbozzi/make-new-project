@@ -1,4 +1,5 @@
 changequote([])dnl
+# -*- mode: conf-unix; -*-
 # Generic .gitignore file
 # Copyright (C) 2014-2016 Max Bozzi
 projectname
