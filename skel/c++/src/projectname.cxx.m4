@@ -14,6 +14,6 @@
  */
 # include <iostream>
 
-auto main (int, char **) -> int {
+int main (int, char **) {
   std:: cout << "Hello, World!" << "\n";
 }
