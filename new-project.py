@@ -91,9 +91,9 @@ def create_project(args):
             names.append( (file_path, project_path_and_name(file_path)) )
 
         for source, dest in names:
+            assert(not exists(dest)) # Don't nuke a file that already exists!
             command = "m4 -Dprojectname='{}' '{}' > '{}'".format(args.name, source, dest)
             print (command)
-            assert(not exists(dest))
             # Issue the command.
             os.system(command)
 
