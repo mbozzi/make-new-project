@@ -81,9 +81,6 @@ def create_project(args):
         proj_subdir = join (proj_root, relpath (dirname(file_name), skel_root) + "/")
         return join(proj_subdir, result_name)
 
-    def skeleton_subdir(skel_sub):
-        return relpath(skel_sub, skel_root)
-
     for skel_sub, dirs, files in os.walk(skel_root, topdown=False):
         names = []
         for f in files:
@@ -96,6 +93,20 @@ def create_project(args):
             print (command)
             # Issue the command.
             os.system(command)
+
+    run_init_script(args)
+
+def run_init_script(args):
+    # Look in the skeleton directory (i.e., in skel/)
+    skel_dir = args.skeleton_dir
+    # for a file named lang.sh
+    init_script = join(args.skeleton_dir, args.type)
+    init_script = init_script + ".sh"
+    print(init_script)
+    if os.path.isfile(init_script):
+        command="cd '{}' && '{}'".format(join(args.directory, args.name), init_script)
+        print(command)
+        os.system(command)
 
 def list_projects(args):
     for d in next(os.walk(args.skeleton_dir))[1]:
@@ -110,7 +121,7 @@ if __name__ == "__main__":
     list_parser.set_defaults(func=list_projects)
     list_parser.add_argument("-s", "--skeleton-dir",
                              help="look for project skeletons in the given directory",
-                             default=os.getenv("HOME") + "/prj/make-new-project/skel/")
+                             default=os.getenv("HOME") + "/prj/new-project/skel/")
 
     create_parser = subparsers.add_parser('create')
     create_parser.set_defaults(func=create_project)
@@ -119,7 +130,7 @@ if __name__ == "__main__":
                                default=os.getenv("HOME") + "/prj/")
     create_parser.add_argument("-s", "--skeleton-dir",
                                help="look for project skeletons in the given directory",
-                               default=os.getenv("HOME") + "/prj/make-new-project/skel/")
+                               default=os.getenv("HOME") + "/prj/new-project/skel/")
     create_parser.add_argument("type",
                                help="create a new project of the given type")
     create_parser.add_argument("name",

@@ -20,9 +20,9 @@
 
 # Where should I place the ELF version of the program (compiler's output)?
 ELF = ./projectname
-LDLIBS =
+LDLIBS = $(shell sdl2-config --libs)
 CXXFLAGS += -O2 -g -std=c++14 -Wall -Wextra -pedantic-errors -ftrapv  \
-         -march=native
+         -march=native $(shell sdl2-config --cflags)
 LDFLAGS += -L. -Wl,--gc-sections
 
 # Where should I search for the source code?
